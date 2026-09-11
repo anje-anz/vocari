@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@100..900&family=Quicksand:wght@300..700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-dark: rgba(26, 26, 26, 1);
+  --color-white: #FCFCF7;
+  --color-violet: #4500FF;
+  --font-display: 'Quicksand', 'M PLUS Rounded 1c', sans-serif;
+}
+
+:root {
+  --vocari-bg: #0b0c10;
+  --vocari-panel: #12141a;
+  --vocari-blob-1: #3d6d7a;
+  --vocari-blob-2: #5a4a7a;
+  --vocari-blob-3: #2a4a5c;
+  --vocari-veil: rgba(8, 9, 12, 0.42);
+}
+
+html[data-ink='light'] {
+  --color-white: #fcfcf7;
+  --vocari-bg: #0b0c10;
+  --vocari-panel: #16181f;
+  --vocari-veil: rgba(8, 9, 12, 0.45);
+}
+
+html[data-ink='dark'] {
+  --color-white: #1c1b19;
+  --vocari-bg: #eceae3;
+  --vocari-panel: #f4f2ec;
+  --vocari-veil: rgba(252, 252, 247, 0.38);
+}
+
+html[data-accent='cyan'] {
+  --vocari-blob-1: #3f7380;
+  --vocari-blob-2: #4a5e78;
+  --vocari-blob-3: #2c5360;
+}
+
+html[data-accent='violet'] {
+  --color-cyan-50: #ede9ff;
+  --color-cyan-100: #cfc6ff;
+  --color-cyan-300: #9b8cff;
+  --vocari-blob-1: #5a4ea8;
+  --vocari-blob-2: #7a5aa0;
+  --vocari-blob-3: #3a3870;
+}
+
+html[data-accent='rose'] {
+  --color-cyan-50: #f8e8ee;
+  --color-cyan-100: #e7c0cd;
+  --color-cyan-300: #d089a4;
+  --vocari-blob-1: #8a4e62;
+  --vocari-blob-2: #6a3d55;
+  --vocari-blob-3: #4a3048;
+}
+
+html[data-accent='amber'] {
+  --color-cyan-50: #f4eadc;
+  --color-cyan-100: #e2c9a4;
+  --color-cyan-300: #d0a56a;
+  --vocari-blob-1: #8a6238;
+  --vocari-blob-2: #6e4a30;
+  --vocari-blob-3: #4a3828;
+}
+
+html[data-accent='mint'] {
+  --color-cyan-50: #e4f2ea;
+  --color-cyan-100: #b5d8c6;
+  --color-cyan-300: #7ebfa3;
+  --vocari-blob-1: #3f6e5c;
+  --vocari-blob-2: #4a6a62;
+  --vocari-blob-3: #2c4a42;
+}
+
+.vocari-stage {
+  background: var(--vocari-bg);
+}
+
+.vocari-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--vocari-bg);
+}
+
+.vocari-veil {
+  position: absolute;
+  inset: 0;
+  background: var(--vocari-veil);
+}
+
+.vocari-blob {
+  position: absolute;
+  width: 58vmax;
+  height: 58vmax;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.38;
+  will-change: transform;
+  animation: vocari-drift 36s ease-in-out infinite;
+}
+
+.vocari-blob-hot {
+  opacity: 0.5;
+  filter: blur(72px);
+  animation-duration: 28s;
+}
+
+.vocari-blob-a {
+  top: -18%;
+  left: -12%;
+  background: var(--vocari-blob-1);
+}
+
+.vocari-blob-b {
+  right: -16%;
+  bottom: -22%;
+  background: var(--vocari-blob-2);
+  animation-delay: -12s;
+  animation-duration: 42s;
+}
+
+.vocari-blob-c {
+  left: 28%;
+  top: 22%;
+  width: 40vmax;
+  height: 40vmax;
+  background: var(--vocari-blob-3);
+  animation-delay: -22s;
+  animation-duration: 48s;
+  opacity: 0.28;
+}
+
+.vocari-tide {
+  position: absolute;
+  inset: -20% -30%;
+  opacity: 0.28;
+  background:
+    repeating-linear-gradient(
+      -12deg,
+      transparent 0 42px,
+      var(--vocari-blob-1) 42px 46px,
+      transparent 46px 88px,
+      var(--vocari-blob-2) 88px 91px
+    );
+  filter: blur(18px);
+  animation: vocari-slide 48s linear infinite;
+}
+
+.vocari-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.07;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.35) 0.6px, transparent 0.7px);
+  background-size: 3px 3px;
+}
+
+@keyframes vocari-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(4%, 6%, 0) scale(1.06);
+  }
+}
+
+@keyframes vocari-slide {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-8%, 4%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vocari-blob,
+  .vocari-tide {
+    animation: none;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
