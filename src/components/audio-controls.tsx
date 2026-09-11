@@ -36,9 +36,9 @@ export function AudioControls({ compact = false }: { compact?: boolean }) {
   );
 
   return (
-    <div className={`flex ${compact ? 'flex-wrap items-center gap-3' : 'flex-col gap-3'}`}>
+    <div className={`flex ${compact ? 'flex-wrap items-center gap-3' : 'flex-col items-stretch gap-3'}`}>
       <Select
-        className={compact ? 'max-w-56' : 'max-w-full'}
+        className={compact ? 'max-w-56' : 'w-full max-w-full'}
         options={options}
         value={state.audioOutputId}
         onChange={(id) => patchAudio({ audioOutputId: id })}
@@ -53,7 +53,7 @@ export function AudioControls({ compact = false }: { compact?: boolean }) {
           aria-label="Volume TTS"
           value={state.audioVolume}
           onChange={(event) => patchAudio({ audioVolume: Number(event.target.value) })}
-          className="flex-1 accent-cyan-100"
+          className="vocari-range flex-1"
         />
         <span className="w-8 text-right opacity-70">{state.audioVolume}</span>
       </label>

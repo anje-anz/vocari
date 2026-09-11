@@ -203,7 +203,7 @@ export const Synth: React.FC = () => {
     <div className="flex flex-col h-full w-full items-center justify-center space-y-4">
       <h1 className="w-4/5 text-left text-2xl pl-4">Dai Voce alle tue Parole!</h1>
 
-      <div className="flex flex-col w-4/5 h-fit ring ring-cyan-50/20 rounded-lg backdrop-blur-sm">
+      <div className="flex flex-col w-4/5 h-fit ring-1 ring-line rounded-lg backdrop-blur-sm">
         <div className="flex items-center gap-3 p-4">
           <input
             type="text"
@@ -225,8 +225,8 @@ export const Synth: React.FC = () => {
 
           <button
             className={`
-              flex w-fit h-fit rounded-full ring-1 ring-cyan-50/20
-              hover:bg-cyan-50/10 ml-auto
+              flex w-fit h-fit rounded-full ring-1 ring-line
+              hover:bg-white/10 ml-auto
               disabled:opacity-80 disabled:cursor-not-allowed
             `}
             disabled={!isActive && !canSpeak}

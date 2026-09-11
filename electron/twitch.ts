@@ -22,6 +22,8 @@ let chatClient: ChatClient | null = null;
 let apiClient: ApiClient | null = null;
 let chatAccountId: string | null = null;
 let chatChannel: string | null = null;
+let streamLive = false;
+let streamPoll: ReturnType<typeof setInterval> | null = null;
 let sender: WebContents | null = null;
 let quitting = false;
 
@@ -36,6 +38,54 @@ function sendSafe(channel: string, payload: unknown) {
   } catch {
     // finestra già chiusa
   }
+}
+
+function currentStatus(partial: Partial<TwitchStatus> = {}): TwitchStatus {
+  return {
+    connected: Boolean(chatClient?.isConnected),
+    connecting: Boolean(chatClient?.isConnecting),
+    live: streamLive,
+    accountId: chatAccountId ?? undefined,
+    channel: chatChannel ?? undefined,
+    ...partial,
+  };
+}
+
+async function refreshStreamLive() {
+  if (!apiClient || !chatAccountId) {
+    streamLive = false;
+    return;
+  }
+  const account = loadState().accounts.find((item) => item.id === chatAccountId);
+  if (!account?.userId) {
+    streamLive = false;
+    return;
+  }
+  try {
+    const stream = await apiClient.streams.getStreamByUserId(account.userId);
+    streamLive = Boolean(stream);
+  } catch {
+    streamLive = false;
+  }
+}
+
+function stopStreamPoll() {
+  if (streamPoll) {
+    clearInterval(streamPoll);
+    streamPoll = null;
+  }
+}
+
+function startStreamPoll() {
+  stopStreamPoll();
+  const tick = async () => {
+    await refreshStreamLive();
+    emitStatus(currentStatus());
+  };
+  void tick();
+  streamPoll = setInterval(() => {
+    void tick();
+  }, 30000);
 }
 
 function emitStatus(partial: TwitchStatus) {
@@ -112,6 +162,8 @@ function toLiveMessage(channel: string, text: string, msg: ChatMessage): LiveCha
 }
 
 function disposeClient() {
+  stopStreamPoll();
+  streamLive = false;
   const previous = chatClient;
   chatClient = null;
   apiClient = null;
@@ -144,7 +196,7 @@ export async function connectChat(accountId: string): Promise<TwitchStatus> {
 
   const login = account.login.toLowerCase();
   const channel = login;
-  emitStatus({ connected: false, connecting: true, accountId, channel });
+  emitStatus(currentStatus({ connected: false, connecting: true, accountId, channel }));
 
   const authProvider = new VocariAuthProvider(clientId, accountId, account.userId);
   apiClient = new ApiClient({ authProvider });
@@ -157,6 +209,7 @@ export async function connectChat(accountId: string): Promise<TwitchStatus> {
   chatClient = client;
   chatAccountId = accountId;
   chatChannel = channel;
+  startStreamPoll();
 
   client.onMessage((chan, _user, text, msg) => {
     emitChat(toLiveMessage(chan, text, msg));
@@ -164,16 +217,16 @@ export async function connectChat(accountId: string): Promise<TwitchStatus> {
 
   client.onDisconnect((manually, reason) => {
     if (quitting || manually) return;
-    emitStatus({
+    emitStatus(currentStatus({
       connected: false,
       accountId,
       channel,
       error: reason?.message ?? 'Disconnesso, riconnessione…',
-    });
+    }));
   });
 
   client.onConnect(() => {
-    emitStatus({ connected: true, connecting: false, accountId, channel });
+    emitStatus(currentStatus({ connected: true, connecting: false, accountId, channel }));
   });
 
   await new Promise<void>((resolve, reject) => {
@@ -196,7 +249,7 @@ export async function connectChat(accountId: string): Promise<TwitchStatus> {
     }
   });
 
-  const status: TwitchStatus = { connected: true, connecting: false, accountId, channel };
+  const status = currentStatus({ connected: true, connecting: false, accountId, channel });
   emitStatus(status);
   return status;
 }
@@ -204,18 +257,13 @@ export async function connectChat(accountId: string): Promise<TwitchStatus> {
 export function disconnectChat(): TwitchStatus {
   quitting = true;
   disposeClient();
-  const status: TwitchStatus = { connected: false };
+  const status = currentStatus({ connected: false, live: false, accountId: undefined, channel: undefined });
   emitStatus(status);
   return status;
 }
 
 export function getChatStatus(): TwitchStatus {
-  return {
-    connected: Boolean(chatClient?.isConnected),
-    connecting: Boolean(chatClient?.isConnecting),
-    accountId: chatAccountId ?? undefined,
-    channel: chatChannel ?? undefined,
-  };
+  return currentStatus();
 }
 
 export async function loginTwitch(clientIdArg?: string): Promise<LinkedAccount> {

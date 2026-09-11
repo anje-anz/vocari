@@ -4,17 +4,21 @@ import {
   applyThemeToDocument,
   loadTheme,
   saveTheme,
-  type ThemeAccent,
-  type ThemeBackdrop,
+  snapField,
+  type ThemeHue,
   type ThemeInk,
+  type ThemeMotion,
+  type ThemePattern,
   type VocariTheme,
 } from '../lib/theme';
 
 type ThemeContextValue = {
   theme: VocariTheme;
   setInk: (ink: ThemeInk) => void;
-  setAccent: (accent: ThemeAccent) => void;
-  setBackdrop: (backdrop: ThemeBackdrop) => void;
+  setHue: (hue: ThemeHue) => void;
+  setField: (field: number) => void;
+  setPattern: (pattern: ThemePattern) => void;
+  setMotion: (motion: ThemeMotion) => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -39,18 +43,23 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const setInk = useCallback((ink: ThemeInk) => commit({ ...theme, ink }), [commit, theme]);
-  const setAccent = useCallback(
-    (accent: ThemeAccent) => commit({ ...theme, accent }),
+  const setHue = useCallback((hue: ThemeHue) => commit({ ...theme, hue }), [commit, theme]);
+  const setField = useCallback(
+    (field: number) => commit({ ...theme, field: snapField(field) }),
     [commit, theme]
   );
-  const setBackdrop = useCallback(
-    (backdrop: ThemeBackdrop) => commit({ ...theme, backdrop }),
+  const setPattern = useCallback(
+    (pattern: ThemePattern) => commit({ ...theme, pattern }),
+    [commit, theme]
+  );
+  const setMotion = useCallback(
+    (motion: ThemeMotion) => commit({ ...theme, motion }),
     [commit, theme]
   );
 
   const value = useMemo(
-    () => ({ theme, setInk, setAccent, setBackdrop }),
-    [theme, setInk, setAccent, setBackdrop]
+    () => ({ theme, setInk, setHue, setField, setPattern, setMotion }),
+    [theme, setInk, setHue, setField, setPattern, setMotion]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

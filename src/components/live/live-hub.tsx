@@ -21,7 +21,7 @@ export function LiveHub() {
       >
         <div className="w-72 shrink-0">
           <div className="mb-4 pl-3 text-2xl">Piattaforme</div>
-          <div className="flex flex-col gap-1 rounded-xl ring-1 ring-cyan-50/20 backdrop-blur-sm p-1">
+          <div className="flex flex-col gap-1 rounded-lg ring-1 ring-line backdrop-blur-sm p-1">
             {platforms.map((platform) => {
               const active = picked && platform.id === selectedPlatform;
               return (
@@ -33,8 +33,8 @@ export function LiveHub() {
                     selectPlatform(platform.id);
                   }}
                   className={`
-                    relative flex w-full items-center rounded-lg overflow-hidden
-                    ${active ? 'ring ring-cyan-50/80 bg-cyan-50/10' : 'hover:bg-cyan-50/10'}
+                    relative flex w-full items-center rounded-lg
+                    ${active ? 'ring-1 ring-line bg-white/10' : 'hover:bg-white/10'}
                   `}
                 >
                   <PlatformIcon id={platform.id} className="w-6 h-6 m-1.5 opacity-80" />
@@ -52,7 +52,7 @@ export function LiveHub() {
         </div>
 
         {picked && selected && (
-          <div className="w-80 shrink-0 rounded-xl ring-1 ring-cyan-50/20 backdrop-blur-sm p-4">
+          <div className="w-80 shrink-0 rounded-lg ring-1 ring-line backdrop-blur-sm p-4">
             {showCustomForm ? (
               <form
                 className="flex flex-col gap-3"
@@ -72,11 +72,11 @@ export function LiveHub() {
                   value={customName}
                   onChange={(event) => setCustomName(event.target.value)}
                   placeholder="Nome"
-                  className="rounded-lg bg-transparent px-3 py-2 ring-1 ring-cyan-50/20 outline-none"
+                  className="rounded-lg bg-transparent px-3 py-2 ring-1 ring-line outline-none"
                 />
                 <button
                   type="submit"
-                  className="rounded-lg ring-1 ring-cyan-50/20 hover:bg-cyan-50/10 px-3 py-2"
+                  className="rounded-lg ring-1 ring-line hover:bg-white/10 px-3 py-2"
                 >
                   Aggiungi
                 </button>

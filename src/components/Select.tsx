@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
+import { cn } from '../utils/cn';
 
 export type SelectId = string;
 
@@ -31,13 +32,11 @@ export const Select: React.FC<SelectProps> = ({
   const selectedValue = value ?? internalValue;
 
   const selectedOption = useMemo(
-    () => options.find(o => o.id === selectedValue) ?? options[0],
+    () => options.find((o) => o.id === selectedValue) ?? options[0],
     [options, selectedValue]
   );
 
   const selectedRef = useRef<HTMLButtonElement | null>(null);
-
-  // ✅ nuovo: ref del “contenitore” per rilevare click fuori
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -46,7 +45,6 @@ export const Select: React.FC<SelectProps> = ({
     }
   }, [expanded]);
 
-  // ✅ nuovo: chiudi se clicchi fuori / Escape
   useEffect(() => {
     if (!expanded) return;
 
@@ -81,92 +79,80 @@ export const Select: React.FC<SelectProps> = ({
   };
 
   return (
-    <div className={`flex justify-center ${className}`}>
-      {/* ✅ rootRef qui: include header + dropdown */}
-      <div ref={rootRef} className="relative w-fit">
-        {/* Header */}
-        <button
-          type="button"
-          className="
-            flex items-center justify-between
-            w-full p-2
-            text-sm
-            rounded-lg
-            ring-1 ring-cyan-50/20
-            hover:bg-cyan-50/10
-            backdrop-blur-sm
-          "
-          onClick={() => setExpanded(prev => !prev)}
-          disabled={options.length === 0}
-        >
-          <span className="flex min-w-0 items-center gap-1">
-            {startIcon && <span className="shrink-0">{startIcon}</span>}
-            <span className="truncate">{selectedOption?.label ?? 'Seleziona'}</span>
-          </span>
+    <div ref={rootRef} className={cn('relative w-fit', className)}>
+      <button
+        type="button"
+        className="
+          flex items-center justify-between
+          w-full p-2
+          text-sm
+          rounded-lg
+          ring-1 ring-line
+          hover:bg-white/10
+        "
+        onClick={() => setExpanded((prev) => !prev)}
+        disabled={options.length === 0}
+      >
+        <span className="flex min-w-0 items-center gap-1">
+          {startIcon && <span className="shrink-0">{startIcon}</span>}
+          <span className="truncate">{selectedOption?.label ?? 'Seleziona'}</span>
+        </span>
 
-          <span
-            className={`
-              ml-2 text-xs opacity-80
-              transition-transform duration-200 ease-out
-              ${expanded ? 'rotate-90' : 'rotate-0'}
-            `}
-          >
-            <ChevronRight className="w-4 h-4" />
-          </span>
-        </button>
-
-        {/* Dropdown flottante */}
-        <div
+        <span
           className={`
-            absolute w-fit left-0 right-0 mt-4
-            z-50 overflow-hidden
-            origin-top
-            rounded-lg
-            ring-1 ring-cyan-50/20
-            backdrop-blur-lg
-            ${
-              expanded
-                ? 'scale-y-100 opacity-100'
-                : 'scale-y-0 opacity-0 pointer-events-none'
-            }
-            transition-all duration-150 ease-out
+            ml-2 text-xs opacity-80
+            transition-transform duration-200 ease-out
+            ${expanded ? 'rotate-90' : 'rotate-0'}
           `}
         >
-          <div className="max-h-60 overflow-y-auto">
-            {options.map(option => {
-              const isSelected = option.id === selectedOption?.id;
+          <ChevronRight className="w-4 h-4 stroke-1" />
+        </span>
+      </button>
 
-              return (
-                <button
-                  key={option.id}
-                  type="button"
-                  ref={isSelected ? selectedRef : undefined}
-                  onClick={() => handleSelect(option.id)}
+      <div
+        className={`
+          vocari-pop absolute left-0 right-0 z-50 mt-2 min-w-full
+          origin-top overflow-hidden rounded-lg ring-1 ring-line
+          ${expanded ? 'scale-y-100 opacity-100' : 'pointer-events-none scale-y-0 opacity-0'}
+          transition-all duration-150 ease-out
+        `}
+        aria-hidden={!expanded}
+        inert={!expanded || undefined}
+      >
+        <div className="max-h-60 overflow-y-auto">
+          {options.map((option) => {
+            const isSelected = option.id === selectedOption?.id;
+
+            return (
+              <button
+                key={option.id}
+                type="button"
+                ref={isSelected ? selectedRef : undefined}
+                onClick={() => handleSelect(option.id)}
+                className={`
+                  flex w-full items-center text-left
+                  px-2 py-2
+                  text-sm
+                  transition-colors duration-150
+                  ${
+                    isSelected
+                      ? 'bg-white/10 text-white'
+                      : 'text-white/80 hover:bg-white/10'
+                  }
+                `}
+              >
+                <span
                   className={`
-                    flex w-full items-center text-left
-                    px-2 py-2
-                    text-sm
-                    transition-colors duration-150
-                    ${
-                      isSelected
-                        ? 'bg-cyan-50/10 text-cyan-100'
-                        : 'text-white/80 hover:bg-cyan-50/5'
-                    }
+                    text-xs font-medium mr-2
+                    ${isSelected ? 'text-white' : 'text-white/40'}
                   `}
                 >
-                  <span
-                    className={`
-                      text-xs font-medium mr-2
-                      ${isSelected ? 'text-cyan-300' : 'text-white/40'}
-                    `}
-                  >
-                    {isSelected ? '●' : '○'}
-                  </span>
-                  <span className="truncate">{option.label}</span>
-                </button>
-              );
-            })}
-          </div>
+                  {isSelected ? '●' : '○'}
+                </span>
+                <span className="truncate">{option.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

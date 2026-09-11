@@ -45,7 +45,7 @@ export function AccountPanel({
             key={account.id}
             type="button"
             onClick={() => void selectAccount(account.id)}
-            className="rounded-lg px-3 py-2 text-left hover:bg-cyan-50/10 ring-1 ring-cyan-50/10"
+            className="rounded-lg px-3 py-2 text-left hover:bg-white/10 ring-1 ring-line"
           >
             {account.displayName}
           </button>
@@ -76,13 +76,13 @@ export function AccountPanel({
               patchClientId(event.target.value);
             }}
             placeholder="Client ID dell'app Vocari"
-            className="rounded-lg bg-transparent px-3 py-2 ring-1 ring-cyan-50/20 outline-none text-sm"
+            className="rounded-lg bg-transparent px-3 py-2 ring-1 ring-line outline-none text-sm"
           />
           <button
             type="button"
             disabled={loginBusy || !clientId.trim()}
             onClick={() => void loginTwitch(clientId)}
-            className="rounded-lg ring-1 ring-cyan-50/20 hover:bg-cyan-50/10 px-3 py-2 disabled:opacity-50"
+            className="rounded-lg ring-1 ring-line hover:bg-white/10 px-3 py-2 disabled:opacity-50"
           >
             {loginBusy ? 'In attesa su Twitch…' : 'Aggiungi account Twitch'}
           </button>
@@ -114,14 +114,14 @@ export function AccountPanel({
             value={stubName}
             onChange={(event) => setStubName(event.target.value)}
             placeholder="Nome account"
-            className="rounded-lg bg-transparent px-3 py-2 ring-1 ring-cyan-50/20 outline-none text-sm"
+            className="rounded-lg bg-transparent px-3 py-2 ring-1 ring-line outline-none text-sm"
           />
-          <button type="submit" className="rounded-lg ring-1 ring-cyan-50/20 hover:bg-cyan-50/10 px-3 py-2">
+          <button type="submit" className="rounded-lg ring-1 ring-line hover:bg-white/10 px-3 py-2">
             Aggiungi
           </button>
         </form>
       )}
-      {notice && <p className="text-xs text-cyan-100/80">{notice}</p>}
+      {notice && <p className="text-sm opacity-70">{notice}</p>}
     </div>
   );
 }

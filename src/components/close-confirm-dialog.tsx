@@ -44,7 +44,7 @@ export function CloseConfirmDialog({
         aria-modal="true"
         aria-labelledby="vocari-close-title"
         aria-describedby="vocari-close-copy"
-        className="mx-6 w-full max-w-md rounded-xl bg-black/45 p-6 ring-1 ring-cyan-50/25 backdrop-blur-lg"
+        className="vocari-pop mx-6 w-full max-w-md rounded-lg p-6 ring-1 ring-line"
       >
         <h2 id="vocari-close-title" className="text-xl font-display font-extralight">
           Chiudere Vocari?
@@ -61,7 +61,7 @@ export function CloseConfirmDialog({
             type="button"
             disabled={busy}
             onClick={onCancel}
-            className="rounded-lg px-3 py-2 text-sm ring-1 ring-cyan-50/20 hover:bg-cyan-50/10 disabled:opacity-40"
+            className="rounded-lg px-3 py-2 text-sm ring-1 ring-line hover:bg-white/10 disabled:opacity-40"
           >
             Annulla
           </button>
@@ -69,7 +69,7 @@ export function CloseConfirmDialog({
             type="button"
             disabled={busy}
             onClick={onConfirm}
-            className="rounded-lg bg-cyan-50/15 px-3 py-2 text-sm ring-1 ring-cyan-50/40 hover:bg-red-400/20 disabled:opacity-40"
+            className="rounded-lg bg-white/10 px-3 py-2 text-sm ring-1 ring-line hover:bg-red-400/20 disabled:opacity-40"
           >
             {busy ? 'Chiusura in corso…' : 'Chiudi in sicurezza'}
           </button>

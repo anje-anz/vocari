@@ -2,9 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { Palette } from 'lucide-react';
 import { useTheme } from '../contexts/theme-context';
 import {
-  ACCENT_OPTIONS,
-  BACKDROP_OPTIONS,
+  FIELD_ANCHORS,
+  HUE_OPTIONS,
   INK_OPTIONS,
+  MOTION_OPTIONS,
+  PATTERN_OPTIONS,
+  type ThemeHue,
 } from '../lib/theme';
 
 function Choice({
@@ -21,24 +24,58 @@ function Choice({
   return (
     <button
       type="button"
+      title={hint}
       onClick={onClick}
       className={`
-        flex w-full flex-col rounded-lg px-2.5 py-1.5 text-left text-xs
-        ${active ? 'bg-cyan-50/15 ring-1 ring-cyan-50/40' : 'hover:bg-cyan-50/10'}
+        w-full rounded-lg px-2.5 py-1.5 text-left text-xs
+        ${active ? 'bg-white/10 ring-1 ring-line' : 'hover:bg-white/10'}
       `}
     >
-      <span>{label}</span>
-      {hint && <span className="text-[10px] opacity-50">{hint}</span>}
+      {label}
     </button>
   );
 }
 
+function Swatches({
+  active,
+  onPick,
+}: {
+  active: ThemeHue;
+  onPick: (hue: ThemeHue) => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 px-1 pt-1">
+      {HUE_OPTIONS.map((item) => {
+        const selected = active === item.id;
+        return (
+          <button
+            key={item.id}
+            type="button"
+            title={item.label}
+            aria-label={item.label}
+            onClick={() => onPick(item.id)}
+            className={`h-6 w-6 rounded-full ${selected ? 'ring-1 ring-white' : 'ring-1 ring-line'}`}
+            style={
+              item.kind === 'palette'
+                ? {
+                    background:
+                      'conic-gradient(from 120deg, #d07090, #7a6cff, #4aa0b0, #d4a050, #d07090)',
+                  }
+                : { background: item.mid }
+            }
+          />
+        );
+      })}
+    </div>
+  );
+}
+
 export function ThemeMenu() {
-  const { theme, setInk, setAccent, setBackdrop } = useTheme();
+  const { theme, setInk, setHue, setField, setPattern, setMotion } = useTheme();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const current =
-    BACKDROP_OPTIONS.find((item) => item.id === theme.backdrop)?.label ?? 'Temi';
+    PATTERN_OPTIONS.find((item) => item.id === theme.pattern)?.label ?? 'Temi';
 
   useEffect(() => {
     if (!open) return;
@@ -65,68 +102,110 @@ export function ThemeMenu() {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-1 rounded-lg p-2 text-xs ring-1 ring-cyan-50/20 hover:bg-cyan-50/10"
+        className="flex items-center gap-1 rounded-lg p-2 text-xs ring-1 ring-line hover:bg-white/10"
         aria-expanded={open}
         aria-haspopup="dialog"
       >
-        <Palette className="h-3 w-3" />
+        <Palette className="h-3 w-3 stroke-1" />
         <span className="max-w-16 truncate">{current}</span>
       </button>
 
       <div
         role="dialog"
         aria-label="Temi"
+        aria-hidden={!open}
+        inert={!open || undefined}
         className={`
-          absolute right-0 z-[70] mt-2 w-[28rem]
-          origin-top-right rounded-xl p-3
-          ring-1 ring-cyan-50/20 backdrop-blur-lg
+          vocari-pop absolute right-0 z-[70] mt-2 w-80
+          origin-top-right rounded-lg p-3
+          ring-1 ring-line
           ${open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'}
           transition-all duration-150 ease-out
         `}
-        style={{ background: 'color-mix(in oklab, var(--vocari-panel) 82%, transparent)' }}
       >
         <div className="mb-3 px-1 text-sm">Temi</div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-2">
-            <div className="px-1 text-[10px] tracking-widest uppercase opacity-50">Tipografia</div>
-            {INK_OPTIONS.map((item) => (
-              <Choice
-                key={item.id}
-                label={item.label}
-                hint={item.hint}
-                active={theme.ink === item.id}
-                onClick={() => setInk(item.id)}
-              />
-            ))}
-            <div className="mt-2 px-1 text-[10px] tracking-widest uppercase opacity-50">Colore</div>
-            <div className="flex flex-wrap gap-2 px-1 pt-1">
-              {ACCENT_OPTIONS.map((item) => {
-                const active = theme.accent === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    title={item.label}
-                    aria-label={item.label}
-                    onClick={() => setAccent(item.id)}
-                    className={`h-6 w-6 rounded-full ${active ? 'ring-2 ring-white/80' : 'ring-1 ring-white/20'}`}
-                    style={{ background: item.swatch }}
-                  />
-                );
-              })}
+        <div className="flex flex-col gap-3">
+          <div>
+            <div className="mb-1 px-1 text-[10px] tracking-widest uppercase opacity-50">
+              Tipografia
+            </div>
+            <div className="grid grid-cols-2 gap-1">
+              {INK_OPTIONS.map((item) => (
+                <Choice
+                  key={item.id}
+                  label={item.label}
+                  hint={item.hint}
+                  active={theme.ink === item.id}
+                  onClick={() => setInk(item.id)}
+                />
+              ))}
             </div>
           </div>
-          <div className="flex flex-col gap-1">
-            <div className="px-1 text-[10px] tracking-widest uppercase opacity-50">Sfondo</div>
-            {BACKDROP_OPTIONS.map((item) => (
-              <Choice
-                key={item.id}
-                label={item.label}
-                hint={item.hint}
-                active={theme.backdrop === item.id}
-                onClick={() => setBackdrop(item.id)}
-              />
-            ))}
+
+          <div>
+            <div className="px-1 text-[10px] tracking-widest uppercase opacity-50">Campo</div>
+            <Swatches active={theme.hue} onPick={setHue} />
+            <div className="px-1 pt-3">
+              <div className="mb-2 flex justify-between text-[9px] uppercase tracking-wider opacity-50">
+                <span>Light</span>
+                <span>Dark</span>
+              </div>
+              <div className="relative h-7">
+                <div className="pointer-events-none absolute inset-x-1 top-1/2 h-px -translate-y-1/2 bg-white/35" />
+                <div className="relative flex h-full items-center justify-between">
+                  {FIELD_ANCHORS.map((n) => {
+                    const active = theme.field === n;
+                    return (
+                      <button
+                        key={n}
+                        type="button"
+                        aria-label={`Campo ${n}%`}
+                        title={`${n}%`}
+                        onClick={() => setField(n)}
+                        className={`
+                          h-2.5 w-2.5 rounded-full transition-transform duration-150
+                          ${active ? 'scale-125 bg-white' : 'bg-transparent ring-1 ring-white/45 hover:bg-white/25'}
+                        `}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div className="mb-1 px-1 text-[10px] tracking-widest uppercase opacity-50">
+              Pattern
+            </div>
+            <div className="grid grid-cols-2 gap-1">
+              {PATTERN_OPTIONS.map((item) => (
+                <Choice
+                  key={item.id}
+                  label={item.label}
+                  hint={item.hint}
+                  active={theme.pattern === item.id}
+                  onClick={() => setPattern(item.id)}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="mb-1 px-1 text-[10px] tracking-widest uppercase opacity-50">
+              Movimento
+            </div>
+            <div className="grid grid-cols-2 gap-1">
+              {MOTION_OPTIONS.map((item) => (
+                <Choice
+                  key={item.id}
+                  label={item.label}
+                  hint={item.hint}
+                  active={theme.motion === item.id}
+                  onClick={() => setMotion(item.id)}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>

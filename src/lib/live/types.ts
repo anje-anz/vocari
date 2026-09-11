@@ -55,6 +55,7 @@ export type ChatMessage = {
 export type TwitchStatus = {
   connected: boolean;
   connecting?: boolean;
+  live?: boolean;
   accountId?: string;
   channel?: string;
   error?: string;

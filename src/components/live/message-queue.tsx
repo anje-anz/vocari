@@ -12,25 +12,25 @@ export function MessageQueue() {
   const { queue, pinQueued, dropQueued } = useLive();
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col rounded-xl ring-1 ring-cyan-50/20 backdrop-blur-sm">
+    <div className="flex min-h-44 flex-col rounded-lg ring-1 ring-line backdrop-blur-sm">
       <div className="px-4 py-2 text-sm opacity-70">Coda</div>
-      <div className="flex min-h-0 flex-1 flex-col-reverse overflow-y-auto px-3 pb-3">
+      <div className="flex flex-col-reverse px-3 pb-3">
         {queue.length === 0 && (
-          <div className="text-sm opacity-40 px-1 py-6 text-center">Nessun messaggio in attesa</div>
+          <div className="px-1 py-8 text-center text-sm opacity-60">Nessun messaggio in attesa</div>
         )}
         {queue.map((message, index) => (
           <div
             key={message.id}
-            className="group flex items-start gap-2 rounded-lg px-2 py-1.5 hover:bg-cyan-50/5"
+            className="group flex items-start gap-2 rounded-lg px-2 py-1.5 hover:bg-white/10"
           >
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 text-xs opacity-70">
                 {index === 0 && (
-                  <span className="rounded px-1 ring-1 ring-cyan-50/40 text-cyan-100">prossimo</span>
+                  <span className="rounded px-1 ring-1 ring-line">prossimo</span>
                 )}
                 <span>{message.user}</span>
                 {message.roles.map((role) => (
-                  <span key={role} className="rounded px-1 ring-1 ring-cyan-50/20">
+                  <span key={role} className="rounded px-1 ring-1 ring-line">
                     {ROLE_LABEL[role] ?? role}
                   </span>
                 ))}
@@ -42,7 +42,7 @@ export function MessageQueue() {
                 type="button"
                 title="Leggi per prossimo"
                 onClick={() => pinQueued(message.id)}
-                className="rounded-lg p-1 hover:bg-cyan-50/10"
+                className="rounded-lg p-1 hover:bg-white/10"
               >
                 <Pin className="w-3.5 h-3.5 stroke-1" />
               </button>
@@ -50,7 +50,7 @@ export function MessageQueue() {
                 type="button"
                 title="Togli dalla coda"
                 onClick={() => dropQueued(message.id)}
-                className="rounded-lg p-1 hover:bg-cyan-50/10"
+                className="rounded-lg p-1 hover:bg-white/10"
               >
                 <X className="w-3.5 h-3.5 stroke-1" />
               </button>
